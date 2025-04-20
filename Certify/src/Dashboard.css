@@ -1,0 +1,14 @@
+
+            .swiper-slide-active {
+              width: 300px !important;
+              z-index: 10
+            }
+              @media (min-width: 640px) {
+                .swiper-slide-active {
+                  width: 400px !important;
+                }
+              }
+            .swiper-slide {
+              transition: all 0.5s ease;
+            }
+        

@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import url('https://fonts.cdnfonts.com/css/satoshi');
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@theme {
+  --font-satoshi: 'Satoshi', sans-serif;
+  --color-primary: #008000;
+  --color-secondary: #aff4c6;
+  --color-primary-text: #232324;
+  --color-secondary-text: #e8f4e8;
+}
+
+@layer base {
+  body {
+    @apply font-satoshi box-border
+  }
+}
+
+                
