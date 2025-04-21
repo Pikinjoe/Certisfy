@@ -1,17 +1,5 @@
 import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
 
-const saveDataToFile = async () => {
-  try {
-    const data = await loadData();
-
-    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
-    console.log("Data saved to file successfully");
-  } catch (error) {
-    console.error("Error saving data to file:", error);
-    throw new Error("Failed to save data");
-  }
-};
-
 const getAllReviews = async (req, res) => {
   const data = await loadData();
 

@@ -1,4 +1,4 @@
-import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
+import { loadData } from "../utils/loadJSON.mjs";
 
 const getAllOrders = async (req, res) => {
     const data = await loadData();

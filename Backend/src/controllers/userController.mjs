@@ -104,23 +104,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-const loadData = async () => {
-  const fileContent = await fs.readFile(DATA_FILE_PATH, "utf8");
-  return JSON.parse(fileContent);
-};
-
-const saveDataToFile = async (data) => {
-  try {
-    const data = await loadJSON('../data/data.json');
-
-    console.log("Writing to data.json:", DATA_FILE_PATH);
-    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
-    console.log("Successfully wrote to data.json");
-  } catch (err) {
-    console.error("Error writing to data.json:", err);
-    throw err;
-  }
-};
-
-
 export { getAllUsers, getUserById, createUser, updateUser, deleteUser, loginUser, loadData, saveDataToFile };
