@@ -19,7 +19,7 @@ const __dirname = dirname(__filename);
 const app = express();
 
 app.use(cors({
-  origin: "http://certisfy.netlify.app",
+  origin: "https://certisfy.netlify.app",
   credentials: true,
 }));
 app.use(express.json());
