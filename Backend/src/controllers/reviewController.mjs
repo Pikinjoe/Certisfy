@@ -2,7 +2,7 @@ import data from "../data/data.json" assert { type: "json" };
 import fs from "fs/promises";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { loadData } from "./userController.js";
+import { loadData } from "./userController.mjs";
 
 
 const __filename = fileURLToPath(import.meta.url);

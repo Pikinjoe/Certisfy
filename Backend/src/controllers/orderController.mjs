@@ -1,4 +1,4 @@
-import data from '../data/data.json'
+import data from '../data/data.json' assert {type: 'json'}
 
 const getAllOrders = (req, res) => {
     res.json(data.orders)
