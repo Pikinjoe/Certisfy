@@ -1,23 +1,8 @@
-import data from '../data/data.json' assert {type: 'json'}
-import fs from "fs/promises";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const DATA_FILE_PATH = join(__dirname, "../data/data.json");
+const getAllFavorites = async (req, res) => {
+  const data = await loadData()
 
-const saveDataToFile = async () => {
-    try {
-      await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), 'utf8');
-      console.log("Data saved to file successfully");
-    } catch (error) {
-      console.error("Error saving data to file:", error);
-      throw new Error("Failed to save data");
-    }
-  };
-
-const getAllFavorites = (req, res) => {
     const { userId } = req.query
     if (userId) {
         const userFavorites = data.favorites.filter(fav => fav.userId === userId);
@@ -27,6 +12,8 @@ const getAllFavorites = (req, res) => {
 }
 
 const createFavorite = async (req, res) => {
+  const data = await loadData();
+
     const newFavorite = { id: Date.now().toString(), ...req.body };
     data.favorites.push(newFavorite);
     try {
@@ -38,6 +25,8 @@ const createFavorite = async (req, res) => {
   };
   
   const deleteFavorite = async (req, res) => {
+    const data = await loadData();
+
     const favoriteIndex = data.favorites.findIndex(c => c.id === req.params.id);
     if (favoriteIndex === -1) return res.status(404).json({ message: 'Favorite not found' });
     data.favorites.splice(favoriteIndex, 1);

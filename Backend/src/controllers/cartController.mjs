@@ -1,23 +1,8 @@
-import data from "../data/data.json" assert { type: "json" };
-import fs from "fs/promises";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const DATA_FILE_PATH = join(__dirname, "../data/data.json");
+const getAllCarts = async (req, res) => {
+  const data = await loadData();
 
-const saveDataToFile = async () => {
-  try {
-    await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
-    console.log("Data saved to file successfully");
-  } catch (error) {
-    console.error("Error saving data to file:", error);
-    throw new Error("Failed to save data");
-  }
-};
-
-const getAllCarts = (req, res) => {
   const { userId } = req.query;
   if (userId) {
     const userCarts = data.carts.filter((cart) => cart.userId === userId);
@@ -27,6 +12,8 @@ const getAllCarts = (req, res) => {
 };
 
 const createCart = async (req, res) => {
+  const data = await loadData();
+
   const { userId, productId, quantity = 1 } = req.body; // Default quantity to 1 if not provided
   const existingCartIndex = data.carts.findIndex(
     (cart) => cart.userId === userId && cart.productId === productId
@@ -56,6 +43,8 @@ const createCart = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
+  const data = await loadData();
+
   const { id } = req.params;
   const { quantity } = req.body;
   const cartIndex = data.carts.findIndex((cart) => cart.id === id);
@@ -83,6 +72,8 @@ const updateCart = async (req, res) => {
 };
 
 const deleteCart = async (req, res) => {
+  const data = await loadData();
+
   const cartIndex = data.carts.findIndex((c) => c.id === req.params.id);
   if (cartIndex === -1)
     return res.status(404).json({ message: "Cart not found" });
@@ -96,6 +87,8 @@ const deleteCart = async (req, res) => {
 };
 
 const deleteAllCarts = async (req, res) => {
+  const data = await loadData();
+
   const { userId } = req.body;
     if (!userId) {
         return res.status(400).json({ message: "User ID is required" });

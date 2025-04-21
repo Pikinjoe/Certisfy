@@ -1,15 +1,9 @@
-import fs from "fs/promises";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const DATA_FILE_PATH = join(__dirname, "../data/data.json");
+import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
 
 const getAllUsers = async (req, res) => {
   try {
     const data = await loadData();
+
     res.json(data.users || []);
   } catch (error) {
     res.status(500).json({ message: "Failed to load users", error: error.message });
@@ -93,6 +87,7 @@ const loginUser = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
+  
   const data = await loadData();
   const userIndex = data.users.findIndex((u) => u.id === req.params.id);
   if (userIndex === -1)
@@ -116,6 +111,8 @@ const loadData = async () => {
 
 const saveDataToFile = async (data) => {
   try {
+    const data = await loadJSON('../data/data.json');
+
     console.log("Writing to data.json:", DATA_FILE_PATH);
     await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
     console.log("Successfully wrote to data.json");

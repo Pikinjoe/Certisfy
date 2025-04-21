@@ -1,16 +1,9 @@
-import data from "../data/data.json" assert { type: "json" };
-import fs from "fs/promises";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import { loadData } from "./userController.mjs";
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const DATA_FILE_PATH = join(__dirname, "../data/data.json");
+import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
 
 const saveDataToFile = async () => {
   try {
+    const data = await loadData();
+
     await fs.writeFile(DATA_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
     console.log("Data saved to file successfully");
   } catch (error) {
@@ -19,7 +12,9 @@ const saveDataToFile = async () => {
   }
 };
 
-const getAllReviews = (req, res) => {
+const getAllReviews = async (req, res) => {
+  const data = await loadData();
+
   const reviewsWithUser = data.reviews.map((review) => {
     const user = data.users.find((u) => u.id === review.userId);
     return {
@@ -39,6 +34,8 @@ const getAllReviews = (req, res) => {
 
 
 const createReview = async (req, res) => {
+  const data = await loadData();
+
   const { userId, rating, comment } = req.body;
   if (!userId || !rating) {
     return res

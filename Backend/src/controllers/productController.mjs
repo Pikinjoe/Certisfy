@@ -1,11 +1,14 @@
-import data from '../data/data.json' assert {type: 'json'}
+import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
 
+const getAllProducts = async (req, res) => {
+    const data = await loadData();
 
-const getAllProducts = (req, res) => {
     res.json(data.products)
 }
 
-const getProductById = (req, res) => {
+const getProductById = async (req, res) => {
+    const data = await loadData();
+
     const product = data.products.find(c => c.id === req.params.id)
     if(!product) return res.status(404).json({message: 'product not found'});
     res.json(product)
