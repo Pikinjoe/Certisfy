@@ -1,13 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import user from './routes/users.js';
-import order from './routes/orders.js';
-import favorites from './routes/favorites.js';
-import cart from './routes/carts.js';
-import product from './routes/products.js';
-import reviews from './routes/reviews.js';
+import user from './routes/users.mjs';
+import order from './routes/orders.mjs';
+import favorites from './routes/favorites.mjs';
+import cart from './routes/carts.mjs';
+import product from './routes/products.mjs';
+import reviews from './routes/reviews.mjs';
 import multer from 'multer';
-import { loadData, saveDataToFile } from "./controllers/userController.js";
+import { loadData, saveDataToFile } from "./controllers/userController.mjs";
 
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
