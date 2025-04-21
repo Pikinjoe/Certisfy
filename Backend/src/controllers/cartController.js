@@ -1,4 +1,4 @@
-import data from "../data/data.json"
+import data from "../data/data.json" assert { type: "json" };
 import fs from "fs/promises";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
