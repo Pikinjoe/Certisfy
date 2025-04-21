@@ -101,7 +101,7 @@ const Dashboard = () => {
 
     try {
       const checkResponse = await fetch(
-        `http://localhost:8000/api/carts?userId=${user.id}&productId=${productId}`,
+        `https://certisfy.onrender.com/api/carts?userId=${user.id}&productId=${productId}`,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -114,7 +114,7 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/api/carts", {
+      const response = await fetch("https://certisfy.onrender.com/api/carts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

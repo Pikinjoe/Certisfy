@@ -110,7 +110,7 @@ const Profile = ({ setLogoutHandle }) => {
     }
   };
 
-  const backendBaseUrl = "http://localhost:8000"; 
+  const backendBaseUrl = "https://certisfy.onrender.com"; 
   const imageUrl = user.photoUrl ? `${backendBaseUrl}${user.photoUrl}` : null;
 
   return (
