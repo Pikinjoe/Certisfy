@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllFavorites,  createFavorite, deleteFavorite } from '../controllers/favoriteController.js'
+import { getAllFavorites,  createFavorite, deleteFavorite } from '../controllers/favoriteController.mjs'
 
 const router = Router()
 
