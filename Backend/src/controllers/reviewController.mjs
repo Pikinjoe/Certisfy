@@ -44,7 +44,7 @@ const createReview = async (req, res) => {
     };
 
   data.reviews.push(newReview);
-  await saveDataToFile();
+  await saveDataToFile(data);
 
   res.status(201).json(newReview);
   } catch (error) {

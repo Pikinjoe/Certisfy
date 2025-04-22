@@ -41,7 +41,6 @@ const createUser = async (req, res) => {
   data.users.push(newUser);
 
   try {
-    console.log("Writing to:", DATA_FILE_PATH);
     await saveDataToFile(data);
     console.log("Successfully wrote to data.json");
     res.status(201).json(newUser);

@@ -31,7 +31,7 @@ const createFavorite = async (req, res) => {
     if (favoriteIndex === -1) return res.status(404).json({ message: 'Favorite not found' });
     data.favorites.splice(favoriteIndex, 1);
     try {
-      await saveDataToFile();
+      await saveDataToFile(data);
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Failed to delete favorite" });

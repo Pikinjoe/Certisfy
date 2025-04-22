@@ -34,7 +34,7 @@ const createCart = async (req, res) => {
     const newCart = { id: Date.now().toString(), userId, productId, quantity };
     data.carts.push(newCart);
     try {
-      await saveDataToFile();
+      await saveDataToFile(data);
       res.status(201).json(newCart);
     } catch (error) {
       res.status(500).json({ message: "Failed to add to cart" });
