@@ -2,7 +2,7 @@
 
 export const assets = {
     // Beverages
-    "PremiumCoffee": new URL("../assets/premiumCoffee.png", import.meta.url).href,
+    "premiumCoffee": new URL("../assets/premiumCoffee.png", import.meta.url).href,
     "OrganicGreenTea": new URL("../assets/OrganicGreenTea.png", import.meta.url).href,
     "SparklingLemonade": new URL("../assets/SparklingLemonade.png", import.meta.url).href,
     "ChamomileHerbalTea": new URL("../assets/ChamomileHerbalTea.png", import.meta.url).href,
@@ -119,11 +119,11 @@ export const assets = {
     "Spinach": new URL("../assets/Spinach.jpg", import.meta.url).href,
     "Kale": new URL("../assets/Kale.jpg", import.meta.url).href,
     "Lettuce": new URL("../assets/Lettuce.jpg", import.meta.url).href,
-    "Bellpepper": new URL("../assets/BellPepper.jpg", import.meta.url).href,
+    "BellPepper": new URL("../assets/BellPepper.jpg", import.meta.url).href,
     "Onion": new URL("../assets/Onion.jpg", import.meta.url).href,
     "Garlic": new URL("../assets/Garlic.jpg", import.meta.url).href,
     "Potato": new URL("../assets/Potato.jpg", import.meta.url).href,
-    "Sweetpotato": new URL("../assets/SweetPotato.jpg", import.meta.url).href,
+    "SweetPotato": new URL("../assets/SweetPotato.jpg", import.meta.url).href,
     "Zucchini": new URL("../assets/Zucchini.png", import.meta.url).href,
     "Asparagus": new URL("../assets/Asparagus.jpg", import.meta.url).href,
     "Mushroom": new URL("../assets/Mushroom.png", import.meta.url).href,
