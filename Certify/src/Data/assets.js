@@ -2,7 +2,7 @@
 
 export const assets = {
     // Beverages
-    "PremiumCoffee": new URL("../assets/PremiumCoffee.png", import.meta.url).href,
+    "PremiumCoffee": new URL("../assets/premiumCoffee.png", import.meta.url).href,
     "OrganicGreenTea": new URL("../assets/OrganicGreenTea.png", import.meta.url).href,
     "SparklingLemonade": new URL("../assets/SparklingLemonade.png", import.meta.url).href,
     "ChamomileHerbalTea": new URL("../assets/ChamomileHerbalTea.png", import.meta.url).href,
