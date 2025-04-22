@@ -1053,7 +1053,7 @@
       "description": "Fire up your snack game with these BBQ peanuts, roasted and seasoned with a smoky, tangy BBQ blend that’s bold and irresistible.",
       "rating": 4.3,
       "size": "20 oz",
-      "image": "BbqPeanuts"
+      "image": "BBQPeanuts"
     },
     {
       "id": 61,
@@ -1533,7 +1533,7 @@
       "description": "Brighten your dishes with this sweet bell pepper, its vibrant crunch and juicy flesh adding a mild, colorful sweetness to every bite.",
       "rating": 4.4,
       "size": "1 lb",
-      "image": "Bellpepper"
+      "image": "BellPepper"
     },
     {
       "id": 109,
@@ -1573,7 +1573,7 @@
       "description": "Savor the rich, orange-hued sweetness of this sweet potato, its tender, naturally sweet flesh offering a wholesome twist on a classic staple.",
       "rating": 4.5,
       "size": "1 lb",
-      "image": "Sweetpotato"
+      "image": "SweetPotato"
     },
     {
       "id": 113,
