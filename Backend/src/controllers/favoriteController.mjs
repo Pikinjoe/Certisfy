@@ -13,11 +13,15 @@ const getAllFavorites = async (req, res) => {
 
 const createFavorite = async (req, res) => {
   const data = await loadData();
+  const { userId, productId } = req.body;
+  if (!userId || !productId) {
+    return res.status(400).json({ message: "UserId and productId are required" });
+  }
 
-    const newFavorite = { id: Date.now().toString(), ...req.body };
+    const newFavorite = { id: Date.now().toString(), userId, productId, ...req.body };
     data.favorites.push(newFavorite);
     try {
-      await saveDataToFile();
+      await saveDataToFile(data);
       res.status(201).json(newFavorite);
     } catch (error) {
       res.status(500).json({ message: "Failed to create favorite" });

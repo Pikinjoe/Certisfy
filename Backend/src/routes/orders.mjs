@@ -4,7 +4,7 @@ import { getAllOrders, getOrderById, createOrder, updateOrder, deleteOrder } fro
 const router = Router()
 
 router.get('/', getAllOrders)
-router.get('/:id', getOrderById)
+router.get('/order/:userId', getOrderById)
 router.post('/', createOrder)
 router.put('/:id', updateOrder)
 router.delete('/:id', deleteOrder)

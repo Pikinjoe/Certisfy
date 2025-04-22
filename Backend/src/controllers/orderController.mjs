@@ -7,17 +7,26 @@ const getAllOrders = async (req, res) => {
 };
 
 const getOrderById = async (req, res) => {
+  const { userId } = req.params;
   const data = await loadData();
 
-  const order = data.orders.find((c) => c.id === req.params.id);
-  if (!order) return res.status(404).json({ message: "order not found" });
-  res.json(order);
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  const userOrders = data.orders.filter((order) => order.userId === userId);
+  res.json(userOrders);
 };
 
 const createOrder = async (req, res) => {
   const data = await loadData();
+  const { userId } = req.body;
 
-  const neworder = { id: Date.now().toString(), ...req.body };
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  const neworder = { id: Date.now().toString(),userId, ...req.body };
   data.orders.push(neworder);
   res.status(201).json(neworder);
 
@@ -26,7 +35,9 @@ const createOrder = async (req, res) => {
     res.status(201).json(neworder);
   } catch (error) {
     data.orders.pop(); // rollback if save fails
-    res.status(500).json({ message: "Failed to save order", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to save order", error: error.message });
   }
 };
 
@@ -45,7 +56,9 @@ const updateOrder = async (req, res) => {
     res.json(data.orders[orderIndex]);
   } catch (error) {
     data.orders[orderIndex] = original;
-    res.status(500).json({ message: "Failed to update order", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to update order", error: error.message });
   }
 };
 
@@ -62,7 +75,9 @@ const deleteOrder = async (req, res) => {
     res.status(204).send();
   } catch (error) {
     data.orders.splice(orderIndex, 0, deletedOrder);
-    res.status(500).json({ message: "Failed to delete order", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to delete order", error: error.message });
   }
 };
 

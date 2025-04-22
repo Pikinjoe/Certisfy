@@ -71,7 +71,7 @@ const Review = () => {
             >
                 {review.user?.photoUrl ? (
                 <img
-                  src={`http://localhost:8000${review.user.photoUrl}`}
+                  src={`https://certisfy.onrender.com/api${review.user.photoUrl}`}
                   alt={review.user.fullName || "User"}
                   className="h-16 w-16 rounded-full object-cover"
                   onError={(e) => {
