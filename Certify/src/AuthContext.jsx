@@ -4,6 +4,14 @@ import { getUserById, updateUser as updateUserApi, deleteUser as deleteUserApi }
 
 const AuthContext = createContext();
 
+const normalizeUser = (user) => {
+  if (!user) return null;
+  return {
+    ...user,
+    id: user._id || user.id,  // Ensure id is always present
+  };
+};
+
 export const AuthProvider = ({ children }) => {
   // Store logged in user
   const [user, setUser] = useState(null);
@@ -13,15 +21,17 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setUser(normalizeUser(JSON.parse(storedUser)));
     }
     setLoading(false);
   }, []);
 
   //Login function
   const login = (user) => {
-    setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
+    const normalized = normalizeUser(user);
+
+    setUser(normalized);
+    localStorage.setItem("user", JSON.stringify(normalized));
   };
 
   //Logout function
@@ -44,14 +54,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
   const updateUser = async (updatedUser) => {
     try {
+      const userId = user?.id || user?._id;
+
       if (!user?.id) {
         throw new Error("No user ID available for update");
       }
-      const res = await updateUserApi(user.id, updatedUser);
-      setUser(res.data);
-      localStorage.setItem("user", JSON.stringify(res.data));
+      const res = await updateUserApi(userId, updatedUser);
+      setUser(normalizeUser(res.data));
+      localStorage.setItem("user", JSON.stringify(normalizeUser(res.data)));
       toast.success("Profile updated successfully!");
     } catch (error) {
       toast.error("Failed to update profile");
