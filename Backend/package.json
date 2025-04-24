@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/server.mjs",
   "scripts": {
-    "start": "node src/server.mjs",
+    "start": "node Backend/src/server.mjs",
     "dev": "nodemon src/server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
