@@ -14,7 +14,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
 dotenv.config();
-const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/certisfy";
+const mongoURI = process.env.MONGO_URI
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
