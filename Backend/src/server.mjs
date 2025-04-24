@@ -21,7 +21,18 @@ const app = express();
 app.use(cors({
   origin: "https://certisfy.netlify.app",
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.options("*", cors());
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    console.log('Response headers:', res.getHeaders());
+  });
+  next();
+});
+
 app.use(express.json());
 app.use('/uploads', express.static(join(__dirname,'../uploads')));
 
@@ -45,6 +56,7 @@ app.use('/api/favorites', favorites);
 app.use('/api/reviews', reviews);
 
 app.post("/api/users/:id/upload-photo", logRequest, upload.single("photo"), async (req, res, next) => {
+  console.log(`POST /api/users/${req.params.id}/upload-photo received`);
   if (!req.file) {
     return res.status(400).json({ message: "No photo uploaded" });
   }
