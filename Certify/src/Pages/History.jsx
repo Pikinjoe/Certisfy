@@ -26,7 +26,7 @@ const History = () => {
     }, []);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.id) {
       setOrders([]);
       return;
     }

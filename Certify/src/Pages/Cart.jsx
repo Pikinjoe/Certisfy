@@ -48,7 +48,7 @@ const Cart = () => {
   }, [showRating]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.id) {
       setCarts([]);
       return;
     }

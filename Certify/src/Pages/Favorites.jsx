@@ -28,7 +28,7 @@ const Favorites = () => {
   }, []);
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.id) {
       setFavorites([]);
       return;
     }
