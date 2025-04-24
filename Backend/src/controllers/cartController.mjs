@@ -1,104 +1,71 @@
-import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
+import Cart from "../models/cart.mjs";
 
 const getAllCarts = async (req, res) => {
-  const data = await loadData();
-
-  const { userId } = req.query;
-  if (userId) {
-    const userCarts = data.carts.filter((cart) => cart.userId === userId);
-    return res.json(userCarts);
+  try {
+    const { userId } = req.query;
+    const carts = userId ? await Cart.find({ userId }) : await Cart.find();
+    res.json(carts);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch carts", error: err.message });
   }
-  res.json(data.carts);
 };
 
 const createCart = async (req, res) => {
-  const data = await loadData();
-
-  const { userId, productId, quantity = 1 } = req.body; // Default quantity to 1 if not provided
-  const existingCartIndex = data.carts.findIndex(
-    (cart) => cart.userId === userId && cart.productId === productId
-  );
-
-  if (existingCartIndex !== -1) {
-    // Item exists, increment quantity
-    data.carts[existingCartIndex].quantity =
-      (data.carts[existingCartIndex].quantity || 1) + quantity;
-    try {
-      await saveDataToFile();
-      res.status(200).json(data.carts[existingCartIndex]);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update cart" });
+  const { userId, productId, quantity = 1 } = req.body;
+  try {
+    let cart = await Cart.findOne({ userId, productId });
+    if (cart) {
+      cart.quantity += quantity;
+      await cart.save();
+    } else {
+      cart = await Cart.create({ userId, productId, quantity });
     }
-  } else {
-    // New item, create entry
-    const newCart = { id: Date.now().toString(), userId, productId, quantity };
-    data.carts.push(newCart);
-    try {
-      await saveDataToFile(data);
-      res.status(201).json(newCart);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to add to cart" });
-    }
+    res.status(201).json(cart);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add/update cart", error: err.message });
   }
 };
 
 const updateCart = async (req, res) => {
-  const data = await loadData();
-
   const { id } = req.params;
   const { quantity } = req.body;
-  const cartIndex = data.carts.findIndex((cart) => cart.id === id);
-
-  if (cartIndex === -1) {
-    return res.status(404).json({ message: "Cart item not found" });
-  }
-
-  if (quantity <= 0) {
-    // Delete if quantity is 0 or less
-    data.carts.splice(cartIndex, 1);
-  } else {
-    // Update quantity
-    data.carts[cartIndex].quantity = quantity;
-  }
 
   try {
-    await saveDataToFile();
-    res
-      .status(200)
-      .json(data.carts[cartIndex] || { message: "Cart item deleted" });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to update cart" });
+    const cart = await Cart.findById(id);
+    if (!cart) return res.status(404).json({ message: "Cart item not found" });
+
+    if (quantity <= 0) {
+      await cart.deleteOne();
+      return res.status(200).json({ message: "Cart item deleted" });
+    } else {
+      cart.quantity = quantity;
+      await cart.save();
+      return res.status(200).json(cart);
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update cart", error: err.message });
   }
 };
 
 const deleteCart = async (req, res) => {
-  const data = await loadData();
-
-  const cartIndex = data.carts.findIndex((c) => c.id === req.params.id);
-  if (cartIndex === -1)
-    return res.status(404).json({ message: "Cart not found" });
-  data.carts.splice(cartIndex, 1);
   try {
-    await saveDataToFile();
+    const cart = await Cart.findByIdAndDelete(req.params.id);
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: "Failed to delete cart" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete cart", error: err.message });
   }
 };
 
 const deleteAllCarts = async (req, res) => {
-  const data = await loadData();
-
   const { userId } = req.body;
-    if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
-    }
-  data.carts = data.carts.filter((cart) => cart.userId !== userId);
+  if (!userId) return res.status(400).json({ message: "User ID is required" });
+
   try {
-    await saveDataToFile();
+    await Cart.deleteMany({ userId });
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: "Failed to delete all carts" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete all carts", error: err.message });
   }
 };
 

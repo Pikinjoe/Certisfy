@@ -1,4 +1,6 @@
 import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import cors from 'cors';
 import user from './routes/users.mjs';
 import order from './routes/orders.mjs';
@@ -12,6 +14,17 @@ import { loadData, saveDataToFile } from "./controllers/userController.mjs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
+dotenv.config();
+const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/certisfy";
+
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log("Connected to MongoDB");
+}).catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -78,7 +91,7 @@ app.post("/api/users/:id/upload-photo", logRequest, upload.single("photo"), asyn
 
     await saveDataToFile(data); // ✅ write updated data back to disk
 
-    res.json(data.users[userIndex]); // ✅ respond with updated user
+    return res.json(data.users[userIndex]); // ✅ respond with updated user
   } catch (err) {
     next(err);
   }

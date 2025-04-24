@@ -1,57 +1,59 @@
-import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
+import Review from "../models/review.mjs";
+import User from "../models/user.mjs";
 
 const getAllReviews = async (req, res) => {
-  const data = await loadData();
+  try {
+    const reviews = await Review.find().populate("userId", "fullName photoUrl");
 
-  const reviewsWithUser = data.reviews.map((review) => {
-    const user = data.users.find((u) => u.id === review.userId);
-    return {
-      ...review,
-      user: user
-        ? {
-            fullName: user.fullName,
-            photoUrl: user.photoUrl,
-          }
-        : null,
-    };
-  });
+    const reviewsWithUser = reviews.map((review) => ({
+      id: review._id,
+      userId: review.userId._id,
+      rating: review.rating,
+      comment: review.comment,
+      createdAt: review.createdAt,
+      user: {
+        fullName: review.userId.fullName,
+        photoUrl: review.userId.photoUrl,
+      },
+    }));
 
-  res.json(reviewsWithUser);
+    res.json(reviewsWithUser);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to load reviews", error: error.message });
+  }
 };
 
-
-
 const createReview = async (req, res) => {
-  const data = await loadData();
-
   const { userId, rating, comment } = req.body;
-  if (!userId || !rating) {
-    return res
-      .status(400)
-      .json({ message: "UserId and rating are required" });
-  }
-  try {
-    const fullData = await loadData();
-    const user = fullData.users.find(u => String(u.id) === String(userId));
 
-    const newReview = {
-      id: Date.now().toString(),
+  if (!userId || !rating) {
+    return res.status(400).json({ message: "UserId and rating are required" });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const newReview = await Review.create({
       userId,
       rating,
-      userPhotoUrl: user?.photoUrl || "", // ✅ automatically insert from backend
-      comment: comment || "",
-      createdAt: new Date().toISOString(),
-    };
+      comment,
+    });
 
-  data.reviews.push(newReview);
-  await saveDataToFile(data);
-
-  res.status(201).json(newReview);
+    res.status(201).json({
+      id: newReview._id,
+      userId: newReview.userId,
+      rating: newReview.rating,
+      comment: newReview.comment,
+      createdAt: newReview.createdAt,
+      user: {
+        fullName: user.fullName,
+        photoUrl: user.photoUrl,
+      },
+    });
   } catch (error) {
-    data.reviews.pop(); // Rollback on failure
     res.status(500).json({ message: "Failed to save review", error: error.message });
   }
 };
-
 
 export { getAllReviews, createReview };

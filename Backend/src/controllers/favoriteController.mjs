@@ -1,45 +1,46 @@
-import { loadData, saveDataToFile } from "../utils/loadJSON.mjs";
+import Favorite from "../models/favorite.mjs";
 
 const getAllFavorites = async (req, res) => {
-  const data = await loadData()
-
-    const { userId } = req.query
-    if (userId) {
-        const userFavorites = data.favorites.filter(fav => fav.userId === userId);
-        return res.json(userFavorites);
-      }
-      res.json(data.favorites);
-}
+  try {
+    const { userId } = req.query;
+    const favorites = userId ? await Favorite.find({ userId }) : await Favorite.find();
+    res.json(favorites);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch favorites", error: err.message });
+  }
+};
 
 const createFavorite = async (req, res) => {
-  const data = await loadData();
   const { userId, productId } = req.body;
+
   if (!userId || !productId) {
     return res.status(400).json({ message: "UserId and productId are required" });
   }
 
-    const newFavorite = { id: Date.now().toString(), userId, productId, ...req.body };
-    data.favorites.push(newFavorite);
-    try {
-      await saveDataToFile(data);
-      res.status(201).json(newFavorite);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to create favorite" });
+  try {
+    // Prevent duplicates
+    const existing = await Favorite.findOne({ userId, productId });
+    if (existing) {
+      return res.status(409).json({ message: "Favorite already exists" });
     }
-  };
-  
-  const deleteFavorite = async (req, res) => {
-    const data = await loadData();
 
-    const favoriteIndex = data.favorites.findIndex(c => c.id === req.params.id);
-    if (favoriteIndex === -1) return res.status(404).json({ message: 'Favorite not found' });
-    data.favorites.splice(favoriteIndex, 1);
-    try {
-      await saveDataToFile(data);
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ message: "Failed to delete favorite" });
+    const newFavorite = await Favorite.create({ userId, productId });
+    res.status(201).json(newFavorite);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create favorite", error: err.message });
+  }
+};
+
+const deleteFavorite = async (req, res) => {
+  try {
+    const favorite = await Favorite.findByIdAndDelete(req.params.id);
+    if (!favorite) {
+      return res.status(404).json({ message: "Favorite not found" });
     }
-  };
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete favorite", error: err.message });
+  }
+};
 
-export { getAllFavorites, createFavorite, deleteFavorite,}
+export { getAllFavorites, createFavorite, deleteFavorite };
