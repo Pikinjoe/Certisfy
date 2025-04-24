@@ -11,7 +11,7 @@ import Favorite from "./src/models/favorite.mjs";
 dotenv.config({ path: './Backend/.env' });
 
 const migrateData = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
+  await mongoose.connect(process.env.MONGO_URI);
 
   // Add this before inserting anything in migrate.mjs:
 await User.deleteMany({});

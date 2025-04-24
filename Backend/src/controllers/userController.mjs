@@ -23,29 +23,30 @@ const getUserById = async (req, res) => {
 
 // POST /api/users
 const createUser = async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password) {
-    return res.status(400).json({ message: "Username, email, and password are required" });
-  }
-
   try {
+    console.log('Create user payload:', req.body);
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "Username, email, and password are required" });
+    }
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
-
     const newUser = await User.create({
       username,
-      email,
+      email: email.toLowerCase(),
       password,
       fullName: username,
     });
-
+    console.log('User created:', newUser);
     res.status(201).json(newUser);
   } catch (error) {
+    console.error('Create user error:', error);
     res.status(500).json({ message: "Failed to create user", error: error.message });
   }
 };
+
 
 // PUT /api/users/:id
 const updateUser = async (req, res) => {
