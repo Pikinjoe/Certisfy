@@ -110,8 +110,7 @@ const Profile = ({ setLogoutHandle }) => {
     }
   };
 
-  const backendBaseUrl = "https://certisfy.onrender.com"; 
-  const imageUrl = user.photoUrl ? `${backendBaseUrl}${user.photoUrl}` : null;
+  const imageUrl = user.photoUrl || null;
 
   return (
     <div className="bg-green-50 h-screen">

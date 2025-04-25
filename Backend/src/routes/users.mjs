@@ -1,9 +1,16 @@
 import { Router } from "express";
 import { getAllUsers, getUserById, createUser, updateUser, deleteUser, loginUser } from '../controllers/userController.mjs'
 import User from '../models/user.mjs'
+import { v2 as cloudinary } from 'cloudinary';
 import multer from 'multer';
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,9 +54,17 @@ router.post('/:id/upload-photo', upload.single('photo'), async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.photoUrl = `/uploads/${req.file.filename}`;
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'certisfy_uploads',
+      public_id: `user_${req.params.id}_${Date.now()}`,
+    });
+
+    await fs.unlink(req.file.path);
+
+
+    user.photoUrl = result.secure_url;
     await user.save();
-    console.log('Photo uploaded successfully:', user.photoUrl);
+    console.log('Photo uploaded successfully to cloudinary:', user.photoUrl);
 
     res.json({ message: "Photo uploaded successfully", photoUrl: user.photoUrl });
   } catch (error) {

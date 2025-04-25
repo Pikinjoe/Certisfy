@@ -59,13 +59,9 @@ const Review = () => {
             >
                 {review.user?.photoUrl ? (
                 <img
-                  src={`https://certisfy.onrender.com${review.user.photoUrl}`}
+                  src={review.user.photoUrl || "https://via.placeholder.com/150"}
                   alt={review.user.fullName || "User"}
                   className="h-16 w-16 rounded-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = "none"; // Hide broken image
-                    e.target.nextSibling.style.display = "flex"; // Show fallback
-                  }}
                 />
               ) : (
                 <div className="h-16 w-16 bg-primary-text rounded-full flex items-center justify-center text-white text-2xl font-semibold">
