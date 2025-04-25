@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getAllUsers, getUserById, createUser, updateUser, deleteUser, loginUser } from '../controllers/userController.mjs'
 import User from '../models/user.mjs'
 import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs/promises';
 import multer from 'multer';
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
