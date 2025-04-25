@@ -46,7 +46,6 @@ const UpdatePhoto = () => {
       const errorMessage = error.response?.data?.error || "Failed to update profile photo. Please try again.";
       toast.error(errorMessage);
     }
-    }
   };
 
   return (
