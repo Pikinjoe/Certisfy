@@ -9,6 +9,7 @@ import cart from './routes/carts.mjs';
 import product from './routes/products.mjs';
 import reviews from './routes/reviews.mjs';
 import multer from 'multer';
+import fs from 'fs/promises';
 
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -29,7 +30,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const uploadsDir = join(__dirname, '../uploads');
-fs.mkdir(uploadsDir, { recursive: true })
+await fs.mkdir(uploadsDir, { recursive: true })
   .then(() => console.log('Uploads directory ready'))
   .catch((err) => console.error('Error creating uploads directory:', err));
 
