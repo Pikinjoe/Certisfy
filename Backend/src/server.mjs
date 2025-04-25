@@ -31,7 +31,7 @@ const __dirname = dirname(__filename);
 
 const uploadsDir = join(__dirname, '../uploads');
 await fs.mkdir(uploadsDir, { recursive: true })
-  .then(() => console.log('Uploads directory ready'))
+  .then(() => console.log('Uploads directory ready at: ', uploadsDir))
   .catch((err) => console.error('Error creating uploads directory:', err));
 
 const app = express();
