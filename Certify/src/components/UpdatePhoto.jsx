@@ -13,15 +13,27 @@ const UpdatePhoto = () => {
       toast.error("Please select a photo to upload.");
       return;
     }
+
+    if (newPhoto.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Please upload an image smaller than 10MB.");
+      return;
+    }
+
     try {
       // Create a FormData object to send the file
       const formData = new FormData();
       formData.append("photo", newPhoto);
       console.log("Uploading photo for user:", user.id);
 
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
       // Send the file to the server
       const response = await uploadUserPhoto(user.id, formData);
-      updateUser(response.data);
+      console.log("Upload response:", response.data);
+
+      updateUser({ ...user, photoUrl: response.data.photoUrl });
       setNewPhoto(null);
       setIsEditing(false);
       toast.success("Profile photo updated successfully!");
@@ -31,7 +43,9 @@ const UpdatePhoto = () => {
         response: error.response?.data,
         status: error.response?.status,
       });
-      toast.error("Failed to update profile photo. Please try again.");
+      const errorMessage = error.response?.data?.error || "Failed to update profile photo. Please try again.";
+      toast.error(errorMessage);
+    }
     }
   };
 

@@ -29,10 +29,9 @@ mongoose.connect(mongoURI, {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const uploadsDir = join(__dirname, '../uploads');
-await fs.mkdir(uploadsDir, { recursive: true })
-  .then(() => console.log('Uploads directory ready at: ', uploadsDir))
-  .catch((err) => console.error('Error creating uploads directory:', err));
+const uploadsDir = process.env.NODE_ENV === 'production' ? '/tmp/uploads' : join(__dirname, '../uploads');
+await fs.mkdir(uploadsDir, { recursive: true });
+console.log('Uploads directory ready at:', uploadsDir);
 
 const app = express();
 
@@ -45,16 +44,23 @@ app.use(cors({
 app.options("*", cors());
 
 app.use(express.json());
-app.use('/uploads', express.static(join(__dirname,'../uploads')));
-
-const upload = multer({ dest: join(__dirname, '../uploads') });
+app.use('/uploads', express.static(uploadsDir));
 
 // Debug middleware to log the request object before multer
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.url}`);
+  console.log('Request headers:', req.headers);
+  next();
+});
+
+const upload = multer({ dest: uploadsDir });
+
 const logRequest = (req, res, next) => {
   console.log('Request before multer:', {
     method: req.method,
     url: req.url,
     params: req.params,
+    body: req.body,
   });
   next();
 };
@@ -80,7 +86,10 @@ app.use((err, req, res, next) => {
       message: err.message,
       stack: err.stack,
     });
-    return res.status(400).json({ message: "File upload error", error: err.message || "Unknown error" });
+    if (!res.headersSent) {
+      return res.status(400).json({ message: "File upload error", error: err.message || "Unknown error" });
+    }
+    return; 
   }
   next(err);
 });
