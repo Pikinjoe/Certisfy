@@ -3,23 +3,33 @@ import User from "../models/user.mjs";
 
 const getAllReviews = async (req, res) => {
   try {
-    const reviews = await Review.find().populate("userId", "fullName photoUrl");
+    console.log("Fetching reviews...");
+    const reviews = await Review.find().populate({
+      path: "userId",
+      select: "fullName photoUrl",
+      match: { _id: { $exists: true } },
+    });
 
-    const reviewsWithUser = reviews.map((review) => ({
+    const validReviews = reviews.filter(review => review.userId);
+
+    const reviewsWithUser = validReviews.map((review) => ({
       id: review._id,
       userId: review.userId._id,
       rating: review.rating,
       comment: review.comment,
       createdAt: review.createdAt,
       user: {
-        fullName: review.userId.fullName,
-        photoUrl: review.userId.photoUrl,
+        fullName: review.userId.fullName || "Unknown User",
+        photoUrl: review.userId.photoUrl || '',
       },
     }));
 
+    console.log('Reviews fetched:', reviewsWithUser);
     res.json(reviewsWithUser);
   } catch (error) {
-    res.status(500).json({ message: "Failed to load reviews", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to load reviews", error: error.message });
   }
 };
 
@@ -52,7 +62,9 @@ const createReview = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to save review", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to save review", error: error.message });
   }
 };
 

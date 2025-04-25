@@ -51,10 +51,12 @@ const createUser = async (req, res) => {
 // PUT /api/users/:id
 const updateUser = async (req, res) => {
   try {
+    console.log('Updating user:', req.params.id, 'with data:', req.body);
     const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
     if (!updatedUser) return res.status(404).json({ message: "User not found" });
+    console.log('User updated:', updatedUser);
     res.json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: "Failed to update user", error: error.message });

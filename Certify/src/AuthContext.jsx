@@ -17,13 +17,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   //Check if user is already logged in from local storage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(normalizeUser(JSON.parse(storedUser)));
+      const parsedUser = JSON.parse(storedUser);
+      // Fetch fresh user data from backend
+      getUserById(parsedUser.id)
+        .then((res) => {
+          const freshUser = normalizeUser(res.data);
+          setUser(freshUser);
+          localStorage.setItem("user", JSON.stringify(freshUser));
+        })
+        .catch((error) => {
+          console.error("Error fetching fresh user data:", error);
+          logout(); // Clear stale data if fetch fails
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   //Login function
@@ -63,8 +77,9 @@ export const AuthProvider = ({ children }) => {
         throw new Error("No user ID available for update");
       }
       const res = await updateUserApi(userId, updatedUser);
-      setUser(normalizeUser(res.data));
-      localStorage.setItem("user", JSON.stringify(normalizeUser(res.data)));
+      const updatedData = normalizeUser(res.data);
+      setUser(updatedData);
+      localStorage.setItem("user", JSON.stringify(updatedData));
       toast.success("Profile updated successfully!");
     } catch (error) {
       toast.error("Failed to update profile");

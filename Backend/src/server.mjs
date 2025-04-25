@@ -28,6 +28,11 @@ mongoose.connect(mongoURI, {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const uploadsDir = join(__dirname, '../uploads');
+fs.mkdir(uploadsDir, { recursive: true })
+  .then(() => console.log('Uploads directory ready'))
+  .catch((err) => console.error('Error creating uploads directory:', err));
+
 const app = express();
 
 app.use(cors({

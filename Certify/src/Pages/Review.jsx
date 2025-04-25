@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
-import { getReviews, getUsers } from "../services/api";
+import { getReviews} from "../services/api";
 import { toast } from "react-toastify";
 
 const Review = () => {
@@ -12,22 +12,10 @@ const Review = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const [reviewsRes, usersRes] = await Promise.all([getReviews(), getUsers()]);
+        const reviewsRes = await getReviews();
   
         const reviewsData = Array.isArray(reviewsRes.data) ? reviewsRes.data : [];
-        const usersData = Array.isArray(usersRes.data) ? usersRes.data : [];
-    
-        const mergedReviews = reviewsData.map((review) => {
-          const matchedUser = usersData.find(
-            (u) => String(u.id) === String(review.userId)
-          );
-          return {
-            ...review,
-            user: matchedUser || {},
-          };
-        });
-    
-        setReviews(mergedReviews);
+        setReviews(reviewsData);
       } catch (error) {
         console.error("Error fetching reviews or users:", error);
         toast.error("Failed to load reviews");
