@@ -69,9 +69,9 @@ const Cart = () => {
   const cartProducts = carts
     .map((cart) => ({
       ...products.find(
-        (product) => String(product.id) === String(cart.productId)
+        (product) => String(product._id) === String(cart.productId)
       ),
-      cartId: cart.id,
+      cartId: cart._id,
       quantity: cart.quantity || 1,
     }))
     .filter(Boolean);
@@ -134,7 +134,7 @@ const Cart = () => {
     const orderData = {
       userId: user.id,
       items: cartProducts.map((product) => ({
-        productId: product.id,
+        productId: product._id,
         quantity: product.quantity,
         price: product.price,
       })),
@@ -155,7 +155,8 @@ const Cart = () => {
 
       toast.success("Order placed successfully");
       setCarts([]);
-      setShowRating(true);
+      setShowRating(true)
+      setIsOrdering(false);
     } catch (error) {
       console.error("Error placing order:", error);
       toast.error("Failed to placed order");

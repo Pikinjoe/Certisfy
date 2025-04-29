@@ -49,7 +49,7 @@ const Favorites = () => {
 
   const favoriteProducts = favorites
     .map((favorite) =>
-      products.find((product) => product.id === favorite.productId)
+      products.find((product) => product._id === favorite.productId)
     )
     .filter(Boolean);
 

@@ -69,7 +69,7 @@ const History = () => {
                 </p>
               </div>
               {order.items.map((item) => {
-                const product = products.find((p) => p.id === item.productId);
+                const product = products.find((p) => p._id === item.productId);
                 return (
                   <div
                     key={item.productId}
