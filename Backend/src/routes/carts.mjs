@@ -5,7 +5,7 @@ const router = Router()
 
 router.get('/', getAllCarts)
 router.post('/', createCart)
-//router.delete('/:id', deleteCart)
+router.delete('/:id', deleteCart)
 router.patch('/:id', updateCart)
 router.delete('/user', deleteAllCarts)
 

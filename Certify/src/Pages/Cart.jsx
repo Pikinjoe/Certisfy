@@ -113,7 +113,7 @@ const Cart = () => {
       return;
     }
 
-    const currentQty = cart.quantity || 1;
+    const currentQty = Number(cart.quantity) || 1;
     const newQuantity = currentQty - 1;
 
     try {

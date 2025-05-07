@@ -148,7 +148,7 @@ const Categories = () => {
 
       if (existingItems.length > 0) {
         const existingCart = existingItems[0];
-        const newQuantity = (existingCart.quantity || 1) + 1;
+        const newQuantity = (Number(existingCart.quantity) || 1) + 1;
         await api.patch(`/carts/${existingCart._id}`, { quantity: newQuantity });
         toast.success("Added another to cart");
       } else {

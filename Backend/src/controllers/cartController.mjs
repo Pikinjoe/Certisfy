@@ -38,11 +38,17 @@ const updateCart = async (req, res) => {
     return res.status(400).json({ message: "Invalid cart ID" });
   }
 
+  
+  const validatedQuantity = Number(quantity);
+  if (isNaN(validatedQuantity)) {
+    return res.status(400).json({ message: "Quantity must be a number" });
+  }
+
   try {
     const cart = await Cart.findById(id);
     if (!cart) return res.status(404).json({ message: "Cart item not found" });
 
-    if (quantity <= 0) {
+    if (validatedQuantity <= 0) {
       await cart.deleteOne();
       return res.status(200).json({ message: "Cart item deleted" });
     } else {
@@ -56,6 +62,12 @@ const updateCart = async (req, res) => {
 };
 
 const deleteCart = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid cart ID" });
+  }
+  
   try {
     const cart = await Cart.findByIdAndDelete(req.params.id);
     if (!cart) return res.status(404).json({ message: "Cart not found" });
