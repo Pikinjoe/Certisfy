@@ -70,13 +70,12 @@ await Favorite.deleteMany({});
   }));
   await Favorite.insertMany(favoriteDocs);
 
-  const cartDocs = (data.carts || []).map((cart) => ({
+  const cartDocs = (data.carts || []).flatMap((cart) => (cart.items || []).map((item) => ({
     userId: userMap[cart.userId],
-    items: cart.items.map((item) => ({
-      productId: productMap[item.productId],
-      quantity: item.quantity,
-    })),
-  }));
+    productId: productMap[item.productId],
+    quantity: item.quantity || 1,
+    }))
+  );
   await Cart.insertMany(cartDocs);
 
   console.log("✅ Migration complete!");

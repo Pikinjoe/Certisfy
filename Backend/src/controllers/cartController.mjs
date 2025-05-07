@@ -1,9 +1,13 @@
 import Cart from "../models/cart.mjs";
+import mongoose from "mongoose";
 
 const getAllCarts = async (req, res) => {
   try {
-    const { userId } = req.query;
-    const carts = userId ? await Cart.find({ userId }) : await Cart.find();
+    const { userId, productId } = req.query;
+    let query = {};
+    if (userId) query.userId = userId;
+    if (productId) query.productId = productId;
+    const carts = await Cart.find(query);
     res.json(carts);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch carts", error: err.message });
@@ -29,6 +33,10 @@ const createCart = async (req, res) => {
 const updateCart = async (req, res) => {
   const { id } = req.params;
   const { quantity } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid cart ID" });
+  }
 
   try {
     const cart = await Cart.findById(id);

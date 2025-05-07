@@ -56,6 +56,8 @@ const Cart = () => {
       try {
         const res = await getCarts(user.id);
         const data = Array.isArray(res.data) ? res.data : [];
+        console.log("Fetched cart data:", data);
+        
         setCarts(data);
         if (!selectedDelivery) setSelectedDelivery(deliveryOptions[0]);
       } catch (error) {
@@ -67,23 +69,33 @@ const Cart = () => {
   }, [user]);
 
   const cartProducts = carts
-    .map((cart) => ({
-      ...products.find(
-        (product) => String(product._id) === String(cart.productId)
-      ),
+  .map((cart) => {
+    const matchedProduct = products.find(
+      (product) => String(product._id) === String(cart.productId)
+    );
+    console.log(`Matching cart.productId: ${cart.productId}, Found product:`, matchedProduct);
+    return {
+      ...matchedProduct,
       cartId: cart._id,
       quantity: cart.quantity || 1,
-    }))
+    };
+  })
     .filter(Boolean);
 
   const addItem = async (productId, cartId) => {
-    const cart = carts.find((c) => c.id === cartId);
+    const cart = carts.find((c) => c._id === cartId);
+    if (!cart) {
+      console.error(`Cart not found for cartId: ${cartId}`);
+      toast.error("Cart item not found");
+      return;
+    }
+
     const newQuantity = (cart.quantity || 1) + 1;
     try {
       await api.patch(`/carts/${cartId}`, { quantity: newQuantity });
       setCarts((prev) =>
         prev.map((cart) =>
-          cart.id === cartId ? { ...cart, quantity: newQuantity } : cart
+          cart._id === cartId ? { ...cart, quantity: newQuantity } : cart
         )
       );
       toast.success("Added one more to cart");
@@ -94,20 +106,26 @@ const Cart = () => {
   };
 
   const removeItem = async (productId, cartId) => {
-    const cart = carts.find((c) => c.id === cartId);
+    const cart = carts.find((c) => c._id === cartId);
+    if (!cart) {
+      console.error(`Cart not found for cartId: ${cartId}`);
+      toast.error("Cart item not found");
+      return;
+    }
+
     const currentQty = cart.quantity || 1;
     const newQuantity = currentQty - 1;
 
     try {
       if (newQuantity <= 0) {
         await api.delete(`/carts/${cartId}`);
-        setCarts((prevCarts) => prevCarts.filter((cart) => cart.id !== cartId));
+        setCarts((prevCarts) => prevCarts.filter((cart) => cart._id !== cartId));
         toast.success("Item removed from cart");
       } else {
         await api.patch(`/carts/${cartId}`, { quantity: newQuantity });
         setCarts((prev) =>
           prev.map((cart) =>
-            cart.id === cartId ? { ...cart, quantity: newQuantity } : cart
+            cart._id === cartId ? { ...cart, quantity: newQuantity } : cart
           )
         );
         toast.success("Removed one from cart");
@@ -257,14 +275,14 @@ const Cart = () => {
                   <div className="bg-primary w-20  mb-2 mr-2 rounded flex justify-between items-center px-1 text-white">
                     <span
                       className="bg-secondary-text text-primary font-bold text-lg w-4 h-4 flex justify-center items-center rounded cursor-pointer"
-                      onClick={() => removeItem(product.id, product.cartId)}
+                      onClick={() => removeItem(product._id, product.cartId)}
                     >
                       -
                     </span>
                     <span>{product.quantity}</span>
                     <span
                       className="bg-secondary-text text-primary font-bold text-lg w-4 h-4 flex justify-center items-center rounded cursor-pointer"
-                      onClick={() => addItem(product.id, product.cartId)}
+                      onClick={() => addItem(product._id, product.cartId)}
                     >
                       +
                     </span>

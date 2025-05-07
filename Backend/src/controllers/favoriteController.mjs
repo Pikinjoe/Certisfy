@@ -1,4 +1,5 @@
 import Favorite from "../models/favorite.mjs";
+import mongoose from "mongoose";
 
 const getAllFavorites = async (req, res) => {
   try {
@@ -16,6 +17,11 @@ const createFavorite = async (req, res) => {
   if (!userId || !productId) {
     return res.status(400).json({ message: "UserId and productId are required" });
   }
+
+  if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: "Invalid userId or productId" });
+  }
+
 
   try {
     // Prevent duplicates

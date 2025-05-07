@@ -86,11 +86,14 @@ const Categories = () => {
 
     fetchFavorites();
     fetchCart();
-  }, [user]);
+  }, [user?.id]);
 
   const toggleFavorite = async (productId) => {
-    if (!user) {
-      toast.error("Please log in to add to favorites");
+    console.log(`Toggling favorite for productId: ${productId}, userId: ${user?.id}`);
+
+    if (!user || !user.id) {
+      toast.error("Please log in to add to favorites")
+      navigate("/login");
       return;
     }
 
@@ -144,20 +147,22 @@ const Categories = () => {
       const existingItems = checkResponse.data;
 
       if (existingItems.length > 0) {
-        // Item exists, increment quantity
         const existingCart = existingItems[0];
-        await api.post("/carts", {
-          userId: user.id,
-          productId,
-          quantity: 1, // Add 1 more
-        });
-        setCartItems((prev) => ({ ...prev, [productId]: true }));
+        const newQuantity = (existingCart.quantity || 1) + 1;
+        await api.patch(`/carts/${existingCart._id}`, { quantity: newQuantity });
         toast.success("Added another to cart");
       } else {
         await api.post("/carts", { userId: user.id, productId });
-        setCartItems((prev) => ({ ...prev, [productId]: true }));
         toast.success("Added to cart");
       }
+      // Refresh cart items
+      const res = await getCarts(user.id);
+      const data = Array.isArray(res.data) ? res.data : [];
+      const cartMap = data.reduce((acc, cartItem) => {
+        acc[cartItem.productId] = true;
+        return acc;
+      }, {});
+      setCartItems(cartMap);
     } catch (error) {
       console.error("Error adding to cart", error);
       toast.error("Failed to add to cart");
@@ -251,7 +256,7 @@ const Categories = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
-            <div key={product.id} className="shadow-md rounded bg-white h-48">
+            <div key={product._id} className="shadow-md rounded bg-white h-48">
               <div className="h-3/4 relative">
                 <img
                   src={assets[product.image]}
@@ -265,7 +270,7 @@ const Categories = () => {
                   onClick={(e) => {
                     e.stopPropagation();
 
-                    toggleFavorite(product.id);
+                    toggleFavorite(product._id);
                   }}
                 >
                   {favorites[product.id] ? (
@@ -289,7 +294,7 @@ const Categories = () => {
                   className="bg-primary px-2 font-bold text-lg rounded-md cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
-                    addToCart(product.id);
+                    addToCart(product._id);
                   }}
                 >
                   +
