@@ -20,14 +20,40 @@ const getOrderById = async (req, res) => {
 };
 
 const createOrder = async (req, res) => {
-  const { userId, products, total, status, shippingAddress } = req.body;
+  const { userId, items, subtotal, shipping, tax, total, deliveryDate, orderDate, status } = req.body;
 
-  if (!userId || !products) {
-    return res.status(400).json({ message: "User ID and products are required" });
+  if (!userId || !items || !subtotal || !shipping || !tax || !total || !deliveryDate || !orderDate || !status) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid userId" });
+  }
+
+  for (const item of items) {
+    if (!mongoose.Types.ObjectId.isValid(item.productId)) {
+      return res.status(400).json({ message: "Invalid productId in items" });
+    }
+    if (typeof item.quantity !== "number" || item.quantity <= 0) {
+      return res.status(400).json({ message: "Invalid quantity in items" });
+    }
+    if (typeof item.price !== "number" || item.price <= 0) {
+      return res.status(400).json({ message: "Invalid price in items" });
+    }
   }
 
   try {
-    const newOrder = await Order.create({ userId, products, total, status, shippingAddress });
+    const order = await Order.create({
+      userId,
+      items,
+      subtotal,
+      shipping,
+      tax,
+      total,
+      deliveryDate,
+      orderDate,
+      status,
+    });
     res.status(201).json(newOrder);
   } catch (err) {
     res.status(500).json({ message: "Failed to create order", error: err.message });
