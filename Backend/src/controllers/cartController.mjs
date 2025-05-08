@@ -81,6 +81,10 @@ const deleteAllCarts = async (req, res) => {
   const { userId } = req.body;
   if (!userId) return res.status(400).json({ message: "User ID is required" });
 
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid userId" });
+  }
+
   try {
     await Cart.deleteMany({ userId });
     res.status(204).send();

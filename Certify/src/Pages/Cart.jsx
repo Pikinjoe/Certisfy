@@ -187,8 +187,15 @@ const Cart = () => {
 
     try {
       await api.post("/orders", orderData);
-      await api.delete("/carts/user", { userId: user.id });
-
+     
+  if (!user?.id || typeof user.id !== "string" || user.id.length !== 24) {
+    console.error("Invalid user.id:", user?.id);
+    toast.error("Cannot clear cart: Invalid user ID");
+  } else {
+    console.log("user object:", user);
+    console.log("user.id being sent to DELETE /carts/user:", user.id);
+    await api.delete("/carts/user", { userId: user.id });
+  }
       toast.success("Order placed successfully");
       setCarts([]);
       setShowRating(true);
