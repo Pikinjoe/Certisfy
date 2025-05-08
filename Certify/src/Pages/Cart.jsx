@@ -272,7 +272,6 @@ const Cart = () => {
       setShowRating(false);
       setIsOrdering(false);
       navigate("/history");
-    }e("/history");
     }
   };
 
