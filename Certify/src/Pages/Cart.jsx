@@ -187,7 +187,7 @@ const Cart = () => {
 
     try {
       await api.post("/orders", orderData);
-      await api.delete("/carts/user", { data: { userId: user.id } });
+      await api.delete("/carts/user", { userId: user.id });
 
       toast.success("Order placed successfully");
       setCarts([]);
