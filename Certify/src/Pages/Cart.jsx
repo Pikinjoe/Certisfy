@@ -236,7 +236,7 @@ const Cart = () => {
     }
   };
 
-  const handleRating = () => {
+  const handleRating = async () => {
     if (rating === 0) {
       try {
         toast.error("Please select a rating before submitting.");
