@@ -23,7 +23,6 @@ const UpdatePhoto = () => {
       // Create a FormData object to send the file
       const formData = new FormData();
       formData.append("photo", newPhoto);
-      console.log("Uploading photo for user:", user.id);
 
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
@@ -31,7 +30,6 @@ const UpdatePhoto = () => {
 
       // Send the file to the server
       const response = await uploadUserPhoto(user.id, formData);
-      console.log("Upload response:", response.data);
 
       updateUser({ ...user, photoUrl: response.data.photoUrl });
       setNewPhoto(null);

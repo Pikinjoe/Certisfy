@@ -53,7 +53,6 @@ const Cart = () => {
         ]);
         setProducts(productsRes.data);
         const data = Array.isArray(cartsRes.data) ? cartsRes.data : [];
-        console.log("Fetched cart data:", data);
         setCarts(data);
         if (!selectedDelivery) setSelectedDelivery(deliveryOptions[0]);
       } catch (error) {
@@ -80,7 +79,6 @@ const Cart = () => {
       try {
         const res = await getCarts(user.id);
         const data = Array.isArray(res.data) ? res.data : [];
-        console.log("Fetched cart data:", data);
 
         setCarts(data);
         if (!selectedDelivery) setSelectedDelivery(deliveryOptions[0]);
@@ -97,10 +95,7 @@ const Cart = () => {
       const matchedProduct = products.find(
         (product) => String(product._id) === String(cart.productId)
       );
-      console.log(
-        `Matching cart.productId: ${cart.productId}, Found product:`,
-        matchedProduct
-      );
+     
       return {
         ...matchedProduct,
         cartId: cart._id,
@@ -209,7 +204,6 @@ const Cart = () => {
       status: "placed",
     };
 
-    console.log("orderData being sent:", orderData);
 
     try {
       await api.post("/orders", orderData);
@@ -218,8 +212,6 @@ const Cart = () => {
         console.error("Invalid user.id:", user?.id);
         toast.error("Cannot clear cart: Invalid user ID");
       } else {
-        console.log("user object:", user);
-        console.log("user.id being sent to DELETE /carts/user:", user.id);
         await api.delete(`/carts/user?userId=${user.id}`); // Use query parameter
       }
       toast.success("Order placed successfully");

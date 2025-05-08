@@ -31,7 +31,6 @@ const __dirname = dirname(__filename);
 
 const uploadsDir = process.env.NODE_ENV === 'production' ? '/tmp/uploads' : join(__dirname, '../uploads');
 await fs.mkdir(uploadsDir, { recursive: true });
-console.log('Uploads directory ready at:', uploadsDir);
 
 const app = express();
 

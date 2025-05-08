@@ -3,7 +3,6 @@ import User from "../models/user.mjs";
 
 const getAllReviews = async (req, res) => {
   try {
-    console.log("Fetching reviews...");
     const reviews = await Review.find().populate({
       path: "userId",
       select: "fullName photoUrl",
@@ -24,7 +23,6 @@ const getAllReviews = async (req, res) => {
       },
     }));
 
-    console.log('Reviews fetched:', reviewsWithUser);
     res.json(reviewsWithUser);
   } catch (error) {
     res

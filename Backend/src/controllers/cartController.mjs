@@ -74,7 +74,6 @@ const deleteCart = async (req, res) => {
 
 const deleteAllCarts = async (req, res) => {
   const { userId } = req.query; // Change to req.query
-  console.log("Received userId in deleteAllCarts:", userId);
   if (!userId) return res.status(400).json({ message: "User ID is required" });
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {

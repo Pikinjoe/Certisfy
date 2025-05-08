@@ -89,8 +89,6 @@ const Categories = () => {
   }, [user?.id]);
 
   const toggleFavorite = async (productId) => {
-    console.log(`Toggling favorite for productId: ${productId}, userId: ${user?.id}`);
-
     if (!user || !user.id) {
       toast.error("Please log in to add to favorites")
       navigate("/login");
