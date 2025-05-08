@@ -194,8 +194,8 @@ const Cart = () => {
       setShowRating(true);
       setIsOrdering(false);
     } catch (error) {
-      console.error("Error placing order:", error);
-      toast.error("Failed to placed order");
+      console.error("Error placing order:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to place order");
       setIsOrdering(false);
     }
   };

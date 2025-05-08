@@ -23,8 +23,16 @@ const getOrderById = async (req, res) => {
 const createOrder = async (req, res) => {
   const { userId, items, subtotal, shipping, tax, total, deliveryDate, orderDate, status } = req.body;
 
-  if (!userId || !items || !subtotal || !shipping || !tax || !total || !deliveryDate || !orderDate || !status) {
-    return res.status(400).json({ message: "All fields are required" });
+  if (!userId || !items || !Array.isArray(items) || items.length === 0) { // Add Array check for items
+    return res.status(400).json({ message: "userId and items are required and items must be a non-empty array" });
+  }
+
+  if (typeof subtotal !== "number" || typeof shipping !== "number" || typeof tax !== "number" || typeof total !== "number") {
+    return res.status(400).json({ message: "subtotal, shipping, tax, and total must be numbers" });
+  }
+
+  if (!deliveryDate || !orderDate || !status) {
+    return res.status(400).json({ message: "deliveryDate, orderDate, and status are required" });
   }
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -32,13 +40,13 @@ const createOrder = async (req, res) => {
   }
 
   for (const item of items) {
-    if (!mongoose.Types.ObjectId.isValid(item.productId)) {
-      return res.status(400).json({ message: "Invalid productId in items" });
+    if (!item.productId || !mongoose.Types.ObjectId.isValid(item.productId)) {
+      return res.status(400).json({ message: "Each item must have a valid productId" });
     }
     if (typeof item.quantity !== "number" || item.quantity <= 0) {
       return res.status(400).json({ message: "Invalid quantity in items" });
     }
-    if (typeof item.price !== "number" || item.price <= 0) {
+    if (typeof item.price !== "number" || item.price < 0) { // Allow price to be 0
       return res.status(400).json({ message: "Invalid price in items" });
     }
   }
@@ -57,6 +65,7 @@ const createOrder = async (req, res) => {
     });
     res.status(201).json(order);
   } catch (err) {
+    console.error("Error in createOrder:", err.message, err.stack); // Add detailed logging
     res.status(500).json({ message: "Failed to create order", error: err.message });
   }
 };
