@@ -28,21 +28,45 @@ const Cart = () => {
     { days: 1, cost: 9.99, label: "Standard (1 days)" },
   ];
 
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const res = await getProducts();
+  //       setProducts(res.data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Error fetching products:", error);
+  //       toast.error("Failed to load products");
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchProducts();
+  // }, []);
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const res = await getProducts();
-        setProducts(res.data);
-        setLoading(false);
+        setLoading(true);
+        const [productsRes, cartsRes] = await Promise.all([
+          getProducts(),
+          user?.id ? getCarts(user.id) : Promise.resolve({ data: [] }),
+        ]);
+        setProducts(productsRes.data);
+        const data = Array.isArray(cartsRes.data) ? cartsRes.data : [];
+        console.log("Fetched cart data:", data);
+        setCarts(data);
+        if (!selectedDelivery) setSelectedDelivery(deliveryOptions[0]);
       } catch (error) {
-        console.error("Error fetching products:", error);
-        toast.error("Failed to load products");
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load cart or products");
+        setCarts([]);
+      } finally {
         setLoading(false);
       }
     };
-    fetchProducts();
-  }, []);
-
+    fetchData();
+  }, [user]);
+  
   useEffect(() => {
     if (showRating) shouldShowModalRef.current = true;
   }, [showRating]);
@@ -194,7 +218,7 @@ const Cart = () => {
   } else {
     console.log("user object:", user);
     console.log("user.id being sent to DELETE /carts/user:", user.id);
-    await api.delete("/carts/user", { userId: user.id });
+    await api.delete(`/carts/user?userId=${user.id}`); // Use query parameter
   }
       toast.success("Order placed successfully");
       setCarts([]);

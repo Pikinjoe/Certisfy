@@ -63,11 +63,6 @@ const updateCart = async (req, res) => {
 
 const deleteCart = async (req, res) => {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid cart ID" });
-  }
-  
   try {
     const cart = await Cart.findByIdAndDelete(req.params.id);
     if (!cart) return res.status(404).json({ message: "Cart not found" });
@@ -78,7 +73,8 @@ const deleteCart = async (req, res) => {
 };
 
 const deleteAllCarts = async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.query; // Change to req.query
+  console.log("Received userId in deleteAllCarts:", userId);
   if (!userId) return res.status(400).json({ message: "User ID is required" });
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
