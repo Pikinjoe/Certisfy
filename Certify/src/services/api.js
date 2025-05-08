@@ -28,7 +28,7 @@ export const uploadUserPhoto = (id, formData) =>
 
 export const getProducts = () => api.get("/products");
 export const getProductsById = (id) => api.get(`/products/${id}`);
-export const getOrders = (userId) => api.get(`/order/${userId}`);
+export const getOrders = (userId) => api.get(`/orders/order/${userId}`);
 export const getCarts = (userId) => api.get(`/carts?userId=${userId}`);
 export const getFavorites = (userId) => api.get(`/favorites?userId=${userId}`);
 export const updateCart = (id, cartData) => api.patch(`/carts/${id}`, cartData);

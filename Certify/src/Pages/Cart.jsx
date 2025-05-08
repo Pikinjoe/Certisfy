@@ -66,7 +66,7 @@ const Cart = () => {
     };
     fetchData();
   }, [user]);
-  
+
   useEffect(() => {
     if (showRating) shouldShowModalRef.current = true;
   }, [showRating]);
@@ -199,7 +199,9 @@ const Cart = () => {
       subtotal: getSubTotal(),
       shipping: Number(selectedDelivery.cost) || 0,
       tax: getSubTotal() * 0.1,
-      total: getSubTotal() + getSubTotal() * 0.1 + Number(selectedDelivery.cost) || 0,
+      total:
+        getSubTotal() + getSubTotal() * 0.1 + Number(selectedDelivery.cost) ||
+        0,
       deliveryDate: new Date(
         currentDate.getTime() + selectedDelivery.days * 24 * 60 * 60 * 1000
       ).toISOString(),
@@ -211,21 +213,24 @@ const Cart = () => {
 
     try {
       await api.post("/orders", orderData);
-     
-  if (!user?.id || typeof user.id !== "string" || user.id.length !== 24) {
-    console.error("Invalid user.id:", user?.id);
-    toast.error("Cannot clear cart: Invalid user ID");
-  } else {
-    console.log("user object:", user);
-    console.log("user.id being sent to DELETE /carts/user:", user.id);
-    await api.delete(`/carts/user?userId=${user.id}`); // Use query parameter
-  }
+
+      if (!user?.id || typeof user.id !== "string" || user.id.length !== 24) {
+        console.error("Invalid user.id:", user?.id);
+        toast.error("Cannot clear cart: Invalid user ID");
+      } else {
+        console.log("user object:", user);
+        console.log("user.id being sent to DELETE /carts/user:", user.id);
+        await api.delete(`/carts/user?userId=${user.id}`); // Use query parameter
+      }
       toast.success("Order placed successfully");
       setCarts([]);
       setShowRating(true);
       setIsOrdering(false);
     } catch (error) {
-      console.error("Error placing order:", error.response?.data || error.message);
+      console.error(
+        "Error placing order:",
+        error.response?.data || error.message
+      );
       toast.error(error.response?.data?.message || "Failed to place order");
       setIsOrdering(false);
     }
@@ -233,7 +238,11 @@ const Cart = () => {
 
   const handleRating = () => {
     if (rating === 0) {
-      toast.error("Please select a rating before submitting.");
+      try {
+        toast.error("Please select a rating before submitting.");
+      } catch (e) {
+        console.error("Toast error:", e);
+      }
       return;
     }
     const reviewData = {
@@ -242,19 +251,28 @@ const Cart = () => {
       comment,
     };
     try {
-      createReview(reviewData);
-      toast.success("Thank you for your feedback!");
+      await createReview(reviewData);
+      try {
+        toast.success("Thank you for your feedback!");
+      } catch (e) {
+        console.error("Toast success error:", e);
+      }
       setShowRating(false);
-      setRating(0); // Reset for next time
+      setRating(0);
       setComment("");
       setIsOrdering(false);
       navigate("/history");
     } catch (error) {
       console.error("Error submitting rating:", error);
-      toast.error("Failed to submit rating");
+      try {
+        toast.error("Failed to submit rating");
+      } catch (e) {
+        console.error("Toast error:", e);
+      }
       setShowRating(false);
       setIsOrdering(false);
       navigate("/history");
+    }e("/history");
     }
   };
 

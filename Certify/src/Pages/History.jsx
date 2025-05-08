@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import { getOrders, getProducts, api } from "../services/api";
+import { toast } from "react-toastify";
 
 import { assets } from "../Data/assets";
 
@@ -18,10 +19,14 @@ const History = () => {
           setLoading(false);
         } catch (error) {
           console.error("Error fetching products:", error);
-          toast.error("Failed to load products");
-          setLoading(false);
-        }
-      };
+      try {
+        toast.error("Failed to load products");
+      } catch (e) {
+        console.error("Toast error:", e);
+      }
+      setLoading(false);
+    }
+  };
       fetchProducts();
     }, []);
 
@@ -37,7 +42,11 @@ const History = () => {
         setOrders(data);
       } catch (error) {
         console.error("Error fetching orders:", error);
-        toast.error("Failed to load orders");
+        try {
+          toast.error("Failed to load orders");
+        } catch (e) {
+          console.error("Toast error:", e);
+        }
       }
     }
     fetchOrders();
