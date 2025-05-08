@@ -57,7 +57,7 @@ const Cart = () => {
         const res = await getCarts(user.id);
         const data = Array.isArray(res.data) ? res.data : [];
         console.log("Fetched cart data:", data);
-        
+
         setCarts(data);
         if (!selectedDelivery) setSelectedDelivery(deliveryOptions[0]);
       } catch (error) {
@@ -69,17 +69,20 @@ const Cart = () => {
   }, [user]);
 
   const cartProducts = carts
-  .map((cart) => {
-    const matchedProduct = products.find(
-      (product) => String(product._id) === String(cart.productId)
-    );
-    console.log(`Matching cart.productId: ${cart.productId}, Found product:`, matchedProduct);
-    return {
-      ...matchedProduct,
-      cartId: cart._id,
-      quantity: cart.quantity || 1,
-    };
-  })
+    .map((cart) => {
+      const matchedProduct = products.find(
+        (product) => String(product._id) === String(cart.productId)
+      );
+      console.log(
+        `Matching cart.productId: ${cart.productId}, Found product:`,
+        matchedProduct
+      );
+      return {
+        ...matchedProduct,
+        cartId: cart._id,
+        quantity: cart.quantity || 1,
+      };
+    })
     .filter(Boolean);
 
   const addItem = async (productId, cartId) => {
@@ -119,7 +122,9 @@ const Cart = () => {
     try {
       if (newQuantity <= 0) {
         await api.delete(`/carts/${cartId}`);
-        setCarts((prevCarts) => prevCarts.filter((cart) => cart._id !== cartId));
+        setCarts((prevCarts) =>
+          prevCarts.filter((cart) => cart._id !== cartId)
+        );
         toast.success("Item removed from cart");
       } else {
         await api.patch(`/carts/${cartId}`, { quantity: newQuantity });
@@ -149,17 +154,28 @@ const Cart = () => {
       return;
     }
     setIsOrdering(true);
+
+    const sanitizedItems = cartProducts
+      .map((product) => ({
+        productId: product._id,
+        quantity: Number(product.quantity) || 1,
+        price: Number(product.price) || 0,
+      }))
+      .filter((item) => item.productId && item.price >= 0 && item.quantity > 0);
+
+    if (sanitizedItems.length === 0) {
+      toast.error("No valid items to order");
+      setIsOrdering(false);
+      return;
+    }
+
     const orderData = {
       userId: user.id,
-      items: cartProducts.map((product) => ({
-        productId: product._id,
-        quantity: product.quantity,
-        price: product.price,
-      })),
+      items: sanitizedItems,
       subtotal: getSubTotal(),
-      shipping: selectedDelivery.cost,
+      shipping: Number(selectedDelivery.cost) || 0,
       tax: getSubTotal() * 0.1,
-      total: getSubTotal() + getSubTotal() * 0.1 + selectedDelivery.cost,
+      total: getSubTotal() + getSubTotal() * 0.1 + Number(selectedDelivery.cost) || 0,
       deliveryDate: new Date(
         currentDate.getTime() + selectedDelivery.days * 24 * 60 * 60 * 1000
       ).toISOString(),
@@ -167,13 +183,15 @@ const Cart = () => {
       status: "placed",
     };
 
+    console.log("orderData being sent:", orderData);
+
     try {
       await api.post("/orders", orderData);
       await api.delete("/carts/user", { data: { userId: user.id } });
 
       toast.success("Order placed successfully");
       setCarts([]);
-      setShowRating(true)
+      setShowRating(true);
       setIsOrdering(false);
     } catch (error) {
       console.error("Error placing order:", error);

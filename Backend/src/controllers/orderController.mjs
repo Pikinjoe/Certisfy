@@ -1,4 +1,5 @@
 import Order from "../models/order.mjs";
+import mongoose from "mongoose";
 
 const getAllOrders = async (req, res) => {
   try {
@@ -54,7 +55,7 @@ const createOrder = async (req, res) => {
       orderDate,
       status,
     });
-    res.status(201).json(newOrder);
+    res.status(201).json(order);
   } catch (err) {
     res.status(500).json({ message: "Failed to create order", error: err.message });
   }
